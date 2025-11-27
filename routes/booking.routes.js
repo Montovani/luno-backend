@@ -7,7 +7,7 @@ module.exports = router
 
 
 router.post('/',async(req,res,next)=>{
-    const {requester,host,status,lunies,message,petCared,review} = req.body
+    const {requester,host,status,lunies,message,petCared,review,dateStart,dateEnd} = req.body
     try {
         await Booking.create({
             requester,
@@ -16,7 +16,9 @@ router.post('/',async(req,res,next)=>{
             lunies,
             message,
             petCared,
-            review
+            review,
+            dateStart,
+            dateEnd
         })
         res.status(201).json({message: 'Booking created'})
     } catch (error) {

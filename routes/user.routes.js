@@ -4,6 +4,7 @@ const User = require('../models/User.model')
 const router = require('express').Router()
 const Pet = require('../models/Pet.model')
 
+// Is correct using the query in this way?
 router.get('/', async(req,res,next)=>{
     
     try {
@@ -17,6 +18,7 @@ router.get('/', async(req,res,next)=>{
 router.get('/:userId', async(req,res,next)=>{
     try {
         const {name,aboutUser,petsCategoryAllowed,numberOfWalks,homeType,homeInformation,avatar,mainProfilePhoto,secondProfilePhoto,thirddProfilePhoto} = await User.findById(req.params.userId)
+        const pets = await Pet.find({owner: req.params.userId})
         res.status(200).json({
             name,
             aboutUser,
@@ -24,6 +26,7 @@ router.get('/:userId', async(req,res,next)=>{
             numberOfWalks,
             homeType,
             homeInformation,
+            pets,
             avatar,
             mainProfilePhoto,
             secondProfilePhoto,
@@ -36,6 +39,7 @@ router.get('/:userId', async(req,res,next)=>{
 
 router.patch('/:userId',verifyToken,async(req,res,next)=>{
 
+    // In this way can I garantee that the person who will edit will be who has the autorization?
     if(req.payload._id !== req.params.userId){
         res.status(403).json({errorMessage: 'Not allowed to update this profile'})
         return
@@ -61,16 +65,19 @@ router.patch('/:userId',verifyToken,async(req,res,next)=>{
     }
 })
 
+// I think we need to use verifyToken because I want to make sure who is requesting in the url is the one who has the token. 
 router.get('/dashboard/:userId',verifyToken,async(req,res)=>{
      try {
         const {name,city,aboutUser,petsCategoryAllowed,numberOfWalks,homeType,homeInformation,lunies,avatar,mainProfilePhoto,secondProfilePhoto,thirddProfilePhoto} = await User.findById(req.params.userId)
+        
         const booking = await Booking.find({
             $or: [
-                {host: req.params.userId},
-                {requester: req.params.userId}
+                {host: req.payload._id}, //better to use payload because of security?
+                {requester: req.payload._id}
             ]
         })
         .populate('petCared')
+        const pets = await Pet.find({owner: req.payload._id})
         res.status(200).json({
             name,
             city,
@@ -84,6 +91,7 @@ router.get('/dashboard/:userId',verifyToken,async(req,res)=>{
             mainProfilePhoto,
             secondProfilePhoto,
             thirddProfilePhoto,
+            pets,
             booking,
         })
     } catch (error) {

@@ -26,6 +26,14 @@ const bookingSchema = new Schema ({
         maxlength: 500,
         trim: true
     },
+    dateStart: {
+        type: Date,
+        required:true
+    },
+    dateEnd: {
+        type: Date,
+        required: true
+    },
     petCared: {
         type: [Schema.Types.ObjectId],
         ref: 'Pet'

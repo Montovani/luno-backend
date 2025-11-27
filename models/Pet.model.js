@@ -13,6 +13,10 @@ const petSchema = new Schema ({
         required: true,
         enum: ['cat','rabbit','hamster','small dog','medium dog','big dog'],
     },
+     avatar: {
+        type: 'String',
+        default: 'http://default-adredd.jpg'
+    },
     gender: {
         type: String, 
         required: true,
