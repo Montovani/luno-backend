@@ -12,7 +12,7 @@ router.post('/signup',async(req,res)=>{
 
     // 1 Guard Clause to check if the user filled the inputs:
     if(!name){
-       errors.push('Name is required')
+       errors.push('Name is required.')
     }
     if(!email){
         errors.push('Email is required.')
@@ -24,10 +24,9 @@ router.post('/signup',async(req,res)=>{
         errors.push('You must provide a city.')
     }
 
-    console.log(errors.length)
-
+    const errorMessage = errors.join(' ')
     if(errors.length > 0){
-        res.status(404).json({errorMessage: errors})
+        res.status(400).json({errorMessage})
         return
     }
 
@@ -35,7 +34,7 @@ router.post('/signup',async(req,res)=>{
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/g
 
     if(!emailRegex.test(email)){
-        res.status(404).json({errorMessage: 'Invalid email format'})
+        res.status(400).json({errorMessage: 'Invalid email format'})
         return
     }
 
@@ -45,7 +44,7 @@ router.post('/signup',async(req,res)=>{
     try {
         const response = await User.findOne({email: email})
         if(response){
-            res.status(404).json({errorMessage: 'This email is already in use.'})
+            res.status(400).json({errorMessage: 'This email is already in use.'})
             return
         }
     } catch (error) {
@@ -53,7 +52,7 @@ router.post('/signup',async(req,res)=>{
     }
 
     if(!passwordRegex.test(password)){
-        res.status(404).json({errorMessage: 'Password must be at least 8 characters and include one uppercase letter and one number.'})
+        res.status(400).json({errorMessage: 'Password must be at least 8 characters and include one uppercase letter and one number.'})
         return
     }
 
@@ -92,7 +91,7 @@ router.post('/login',async(req,res)=>{
         return
     }
 
-    // Check if the email provided is in the database, and if yes check the password
+    // Check if the email provided is in the database, and if yes check the password. NOTE Stantarize the techniques for guard clause.
     try {
         const userFound = await User.findOne({email: email})
         if(!userFound){
@@ -100,7 +99,10 @@ router.post('/login',async(req,res)=>{
             return
         }
         const passwordCheck = await bcrypt.compare(password, userFound.password)
-        if(passwordCheck){
+        if(!passwordCheck){
+            res.status(401).json({errorMessage: "Incorrect password, please try again"})
+            return
+        }
             const {email,name,_id} = userFound
             const payload = {
                 _id,
@@ -114,10 +116,6 @@ router.post('/login',async(req,res)=>{
             )
             res.status(200).json({authToken})
             return
-        } else {
-            res.status(401).json({errorMessage: "Incorrect password, please try again"})
-            return
-        }
     } catch (error) {
         console.log(error)
     }
