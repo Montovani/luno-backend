@@ -70,6 +70,11 @@ const userSchema = new Schema ({
         type: String,
         trim: true
     },
+    headline: {
+        type: String,
+        trim: true,
+        maxlength: [68, "please keep bellow 68 characters your headline"]
+    },
     avatar: {
         type: 'String',
         default: 'http://default-adredd.jpg'

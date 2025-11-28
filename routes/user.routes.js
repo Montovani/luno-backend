@@ -4,10 +4,10 @@ const User = require('../models/User.model')
 const router = require('express').Router()
 const Pet = require('../models/Pet.model')
 
-// Is correct using the query in this way?
+
 router.get('/', async(req,res,next)=>{
     const allowedQueries = {}
-
+    
     if(req.query.city){
         allowedQueries.city = req.query.city
     }
@@ -16,30 +16,52 @@ router.get('/', async(req,res,next)=>{
     }
     try {
         const userList = await User.find(allowedQueries)
-        .select('-password -email -secondProfilePhot -thirdProfilePhoto -lunies -__v')
+        .select('-password -email -secondProfilePhot -thirdProfilePhoto -lunies -__v -address -aboutUser')
         res.status(200).json(userList)
     } catch (error) {
         res.status(404).json({errorMessage: "User not found"})
     }
 })
 
+router.get('/dashboard',verifyToken,async(req,res)=>{
+    console.log(req.payload._id)
+    try {
+        const userData = await User.findById(req.payload._id)
+        .select('-password -email -address')
+        .lean()
+        
+        // Make in the booking route
+        const booking = await Booking.find({
+            $or: [
+                {host: req.payload._id}, //better to use payload because of security?
+                {requester: req.payload._id}
+            ]
+        })
+        .populate('petCared')
+        const pets = await Pet.find({owner: req.payload._id})
+        res.status(200).json({
+            ...userData,
+            pets,
+            booking,
+        })
+    } catch (error) {
+        console.log(error)
+       res.status(404).json({errorMessage: "User not found"})
+    }
+})
+
 router.get('/:userId', async(req,res,next)=>{
     try {
-        const {name,aboutUser,petsCategoryAllowed,numberOfWalks,homeType,homeInformation,avatar,mainProfilePhoto,secondProfilePhoto,thirddProfilePhoto} = await User.findById(req.params.userId)
-        // I can use the select in the findById to get only the information I need. Doing in the current way it will get all the information and destructuring only the ones I need. So it is not good/performance
-        const pets = await Pet.find({owner: req.params.userId}) // In the foture think about to create a route in the pet specific for it.
+        const userInfo = await User.findById(req.params.userId)
+        .select('-password -email -lunies -__v -address')
+        .lean()
+
+        // In the future think about to create a route in the pet specific for it.
+        const pets = await Pet.find({owner: req.params.userId}).lean() 
+        
         res.status(200).json({
-            name,
-            aboutUser,
-            petsCategoryAllowed,
-            numberOfWalks,
-            homeType,
-            homeInformation,
-            pets,
-            avatar,
-            mainProfilePhoto,
-            secondProfilePhoto,
-            thirddProfilePhoto
+            ...userInfo,
+            pets
         })
     } catch (error) {
        res.status(404).json({errorMessage: "User not found"})
@@ -48,12 +70,11 @@ router.get('/:userId', async(req,res,next)=>{
 
 router.patch('/:userId',verifyToken,async(req,res,next)=>{
 
-    // In this way can I garantee that the person who will edit will be who has the autorization?
     if(req.payload._id !== req.params.userId){
         res.status(403).json({errorMessage: 'Not allowed to update this profile'})
         return
     }
-    console.log(req.body)
+
     const {name,aboutUser,petsCategoryAllowed,numberOfWalks,homeType,homeInformation,avatar,mainProfilePhoto,secondProfilePhoto,thirddProfilePhoto} = req.body
     try {
         // DOn't pass as empty string
@@ -75,40 +96,16 @@ router.patch('/:userId',verifyToken,async(req,res,next)=>{
     }
 })
 
-// I think we need to use verifyToken because I want to make sure who is requesting in the url is the one who has the token. 
-router.get('/dashboard/:userId',verifyToken,async(req,res)=>{
-    // Dont need the userId and in the find and other parts use req.payload._id
-     try {
-        const {name,city,aboutUser,petsCategoryAllowed,numberOfWalks,homeType,homeInformation,lunies,avatar,mainProfilePhoto,secondProfilePhoto,thirddProfilePhoto} = await User.findById(req.params.userId)
-        
-        // Make in the booking route
-        const booking = await Booking.find({
-            $or: [
-                {host: req.payload._id}, //better to use payload because of security?
-                {requester: req.payload._id}
-            ]
-        })
-        .populate('petCared')
-        const pets = await Pet.find({owner: req.payload._id})
-        res.status(200).json({
-            name,
-            city,
-            avatar,
-            lunies,
-            aboutUser,
-            petsCategoryAllowed,
-            numberOfWalks,
-            homeType,
-            homeInformation,
-            mainProfilePhoto,
-            secondProfilePhoto,
-            thirddProfilePhoto,
-            pets,
-            booking,
-        })
+router.delete('/:userId',verifyToken,async(req,res,next)=>{
+    if(req.payload._id !== req.params.userId){
+        res.status(403).json({errorMessage: 'Not allowed to update this profile'})
+        return
+    }
+    try {
+        await User.findByIdAndDelete(req.payload._id)
+        res.sendStatus(200)
     } catch (error) {
-        console.log(error)
-       res.status(404).json({errorMessage: "User not found"})
+        next(error)
     }
 })
 

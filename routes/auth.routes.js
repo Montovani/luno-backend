@@ -77,6 +77,7 @@ router.post('/login',async(req,res)=>{
 
     const {email,password} = req.body
 
+    
     //Guard clause: If the user give or the password or the email
     if(!email && !password){
         res.status(401).json({errorMessage: 'You must provide the email and password'})
@@ -90,8 +91,9 @@ router.post('/login',async(req,res)=>{
         res.status(401).json({errorMessage: 'Please, provide your password'})
         return
     }
-
+    
     // Check if the email provided is in the database, and if yes check the password. NOTE Stantarize the techniques for guard clause.
+    
     try {
         const userFound = await User.findOne({email: email})
         if(!userFound){
@@ -103,11 +105,10 @@ router.post('/login',async(req,res)=>{
             res.status(401).json({errorMessage: "Incorrect password, please try again"})
             return
         }
-            const {email,name,_id} = userFound
             const payload = {
-                _id,
-                email,
-                name
+                _id: userFound._id,
+                email: userFound.email,
+                name: userFound.name
             }
             const authToken = jwt.sign(
                 payload,
@@ -116,6 +117,7 @@ router.post('/login',async(req,res)=>{
             )
             res.status(200).json({authToken})
             return
+
     } catch (error) {
         console.log(error)
     }
@@ -126,7 +128,6 @@ router.post('/login',async(req,res)=>{
 router.get('/verify',verifyToken, (req,res)=>{
  res.status(200).json(req.payload)
 })
-
 
 
 module.exports = router
