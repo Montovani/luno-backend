@@ -24,7 +24,6 @@ router.get('/', async(req,res,next)=>{
 })
 
 router.get('/dashboard',verifyToken,async(req,res)=>{
-    console.log(req.payload._id)
     try {
         const userData = await User.findById(req.payload._id)
         .select('-password -email -address')

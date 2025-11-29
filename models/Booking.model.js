@@ -3,11 +3,13 @@ const {Schema,model} = require('mongoose')
 const bookingSchema = new Schema ({
     requester: { 
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     },
     host: {
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     },
     status: {
         type: String,
@@ -16,10 +18,9 @@ const bookingSchema = new Schema ({
     },
     lunies: {
         type: Number, // It will add to the host after changing from in progress to completed. The owner can change it and the host will be allowed to change it after 2 days of the 'until'
-        required: true,
         trim: true,
-        max: 800,
-        default: 200
+        max: 100,
+        default: 10
     },
     message: {
         type: String,
@@ -36,7 +37,8 @@ const bookingSchema = new Schema ({
     },
     petCared: {
         type: [Schema.Types.ObjectId],
-        ref: 'Pet'
+        ref: 'Pet',
+        required: true,
     },
     review: {
         type: Schema.Types.ObjectId,

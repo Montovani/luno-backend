@@ -4,6 +4,7 @@ const User = require('../models/User.model')
 
 const router = require('express').Router()
 
+// Create a new pet
 router.post('/', verifyToken, async(req,res,next)=>{
     try {
     //Guard Clause to limit  the amount of dogs.
@@ -32,6 +33,7 @@ router.post('/', verifyToken, async(req,res,next)=>{
 
 })
 
+// Get information for a specific Pet
 router.get('/:petId',async(req,res,next)=>{
     try {
         const petInfo = await Pet.findById(req.params.petId)
@@ -42,6 +44,7 @@ router.get('/:petId',async(req,res,next)=>{
     }
 })
 
+// Update Pet's information
 router.patch('/:petId',verifyToken,async (req,res,next)=>{
     try {
         //Check if the token is the owner  of the pet
@@ -70,6 +73,7 @@ router.patch('/:petId',verifyToken,async (req,res,next)=>{
     }
 })
 
+// Delete Pet
 router.delete('/:petId',verifyToken,async(req,res,next)=>{
     try {
          //Check if the token is the owner of the pet
@@ -87,6 +91,7 @@ router.delete('/:petId',verifyToken,async(req,res,next)=>{
     }
 })
 
+// Get all pets from a user.
 router.get('/owner/:userId',async(req,res,next)=>{
     try {
         const pets = await Pet.find({owner: req.params.userId})
