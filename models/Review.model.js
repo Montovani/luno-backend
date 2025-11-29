@@ -19,9 +19,14 @@ const reviewSchema = new Schema ({
     },
     bookSitting: {
         type: Schema.Types.ObjectId,
-        ref: 'Booking'
+        ref: 'Booking',
+        required: true
     }
     },
     {
         timestamps: true,
     })
+
+    const Review = model('Review',reviewSchema)
+
+    module.exports = Review
