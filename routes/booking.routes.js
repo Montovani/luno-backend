@@ -11,6 +11,7 @@ router.post("/", verifyToken, async (req, res, next) => {
     const { host, message, petCared, dateStart, dateEnd } = req.body;
     const startBooking = new Date(dateStart);
     const endBooking = new Date(dateEnd);
+    // TODO - After MVP I might delete the time on it and geet only the date.
 
     // Guard Clause for pet (Don't want to the user increase the maximum amount  on proporse, for a friend for example)
     if (!petCared || petCared.length === 0 || petCared.length > 5) {
@@ -66,30 +67,24 @@ router.post("/", verifyToken, async (req, res, next) => {
 });
 
 // Get all the bookings from a user
-router.get("/user/:userId", verifyToken, async (req, res, next) => {
+router.get("/user", verifyToken, async (req, res, next) => {
   try {
-    //verify the token and userId
-    if (req.params.userId !== req.payload._id) {
-      res
-        .status(403)
-        .json({ message: "User not allowed to see this information" });
-      return;
-    }
     const userBooking = await Booking.find({
       $or: [{ host: req.payload._id }, { requester: req.payload._id }],
     })
       .populate("petCared")
-      .populate("review");
     res.status(200).json(userBooking);
   } catch (error) {
     next(error);
   }
 });
 
-// Update a booking
+// Update a booking - Change to be only the change of the status. make conditions based on host, requester. Go back after MVP.
 router.patch("/:bookingId", verifyToken, async (req, res, next) => {
   try {
     
+
+    // Make conditions 
     const bookingHostReq = await Booking.findById(req.params.bookingId).select('host requester')
 
     if (!bookingHostReq.requester.equals(req.payload._id) && !bookingHostReq.host.equals(req.payload._id) ) {
@@ -151,6 +146,7 @@ router.delete('/:bookingId',verifyToken,async(req,res,next)=>{
         .json({ errorMessage: "Not allowed to delete this booking" });
       return;
     }
+    // TODO - Another condition: You can delete only if the status is to confirm
     await Booking.findByIdAndDelete(req.params.bookingId)
     res.status(200).json({message: "Booking deleted!"})
     } catch (error) {
@@ -177,7 +173,7 @@ router.get('/:bookingId', verifyToken,async(req,res,next)=>{
         .populate('host', 'name city homeInformation homeType avatar petsCategoryAllowed coordinates')
         .populate('requester','name city avatar ')
         .populate('petCared')
-        .populate('review')
+        .populate('review') // delete because i will create a route for the review.
 
         res.status(200).json(bookingInfo)
     } catch (error) {

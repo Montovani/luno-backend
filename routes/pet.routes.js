@@ -33,6 +33,17 @@ router.post('/', verifyToken, async(req,res,next)=>{
 
 })
 
+// Get all pets from a user.
+router.get('/owner',async(req,res,next)=>{
+    try {
+        const pets = await Pet.find({owner: req.params.userId})
+        res.status(200).json(pets)
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+})
+
 // Get information for a specific Pet
 router.get('/:petId',async(req,res,next)=>{
     try {
@@ -56,7 +67,7 @@ router.patch('/:petId',verifyToken,async (req,res,next)=>{
         }
     
        const {name,category,avatar,gender,dateOfBirth,isHouseTrained,isNeutered,specialInstructions} = req.body
-        console.log(name)
+        
        await Pet.findByIdAndUpdate(req.params.petId,{
             name,
             category,
@@ -91,15 +102,6 @@ router.delete('/:petId',verifyToken,async(req,res,next)=>{
     }
 })
 
-// Get all pets from a user.
-router.get('/owner/:userId',async(req,res,next)=>{
-    try {
-        const pets = await Pet.find({owner: req.params.userId})
-        res.status(200).json(pets)
-    } catch (error) {
-        console.log(error)
-        next(error)
-    }
-})
+
 
 module.exports = router
