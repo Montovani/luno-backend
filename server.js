@@ -17,6 +17,9 @@ const config = require('./config')
 config(app)
 
 // routes
+app.get('/',(req,res,next)=>{
+    res.status(200).json({message:"Server is running"})
+})
 const indexRoutes = require('./routes/index.routes')
 app.use('/api',indexRoutes)
 
