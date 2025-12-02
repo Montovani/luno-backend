@@ -34,9 +34,9 @@ router.post('/', verifyToken, async(req,res,next)=>{
 })
 
 // Get all pets from a user.
-router.get('/owner',async(req,res,next)=>{
+router.get('/owner',verifyToken,async(req,res,next)=>{
     try {
-        const pets = await Pet.find({owner: req.params.userId})
+        const pets = await Pet.find({owner: req.payload._id})
         res.status(200).json(pets)
     } catch (error) {
         console.log(error)

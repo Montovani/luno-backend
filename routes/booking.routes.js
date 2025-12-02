@@ -56,8 +56,8 @@ router.post("/", verifyToken, async (req, res, next) => {
       host,
       lunies: luniesBooking,
       message,
-      dateStart,
-      dateEnd,
+      dateStart: startBooking,
+      dateEnd: endBooking,
       petCared,
     });
     res.status(200).json({ message: "Booking created!" });
