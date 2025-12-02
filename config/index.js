@@ -8,7 +8,11 @@ function config(app){
     app.set('trusty proxy',1)
     
     app.use(logger('dev'))
-    app.use(cors())
+    app.use(
+        cors({
+            origin: [process.env.ORIGIN]
+        })
+    )
     app.use(express.json())
     app.use(express.urlencoded({extended: false}))
 
