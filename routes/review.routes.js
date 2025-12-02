@@ -58,6 +58,28 @@ router.get('/user',verifyToken,async(req,res,next)=>{
     }
 })
 
+// Get all review by userId
+router.get('/user/:userId', async(req,res,next)=>{
+    try {
+        const reviews = await Booking.find({
+            host: req.params.userId,
+            status:"completed"
+        })
+        .select('review')
+        .populate({
+            path: 'review',
+            populate: {
+                path:'owner',
+                select:'name'
+            }
+        })
+
+        res.status(200).json(reviews)
+    } catch (error) {
+        next(error)
+    }
+})
+
 // Update a review
 router.put('/:reviewId', verifyToken, async(req,res,next)=>{
     try {
