@@ -77,19 +77,15 @@ const userSchema = new Schema ({
     },
     avatar: {
         type: 'String',
-        default: 'http://default-adredd.jpg'
     },
     mainProfilePhoto: {
         type: 'String',
-        default: 'http://default-adredd.jpg'
     },
     secondProfilePhoto: {
         type: 'String',
-        default: 'http://default-adredd.jpg'
     },
     thirddProfilePhoto: {
         type: 'String',
-        default: 'http://default-adredd.jpg'
     },
     lunies: {
         type: Number,
