@@ -170,7 +170,7 @@ router.get('/:bookingId', verifyToken,async(req,res,next)=>{
         return;
         }
         const bookingInfo = await Booking.findById(req.params.bookingId)
-        .populate('host', 'name city homeInformation homeType avatar petsCategoryAllowed coordinates')
+        .populate('host', 'name city homeInformation homeType avatar petsCategoryAllowed coordinates address')
         .populate('requester','name city avatar ')
         .populate('petCared')
         .populate('review') // delete because i will create a route for the review.

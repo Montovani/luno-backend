@@ -26,7 +26,7 @@ router.get('/', async(req,res,next)=>{
 router.get('/dashboard',verifyToken,async(req,res)=>{
     try {
         const userData = await User.findById(req.payload._id)
-        .select('-password -email -address')
+        .select('-password -email')
         .lean()
         
         // Make in the booking route
@@ -74,7 +74,7 @@ router.patch('/:userId',verifyToken,async(req,res,next)=>{
         return
     }
 
-    const {name,city,aboutUser,petsCategoryAllowed,numberOfWalks,homeType,homeInformation,avatar,mainProfilePhoto,secondProfilePhoto,thirddProfilePhoto} = req.body
+    const {name,city,address,aboutUser,petsCategoryAllowed,numberOfWalks,homeType,homeInformation,avatar,mainProfilePhoto,secondProfilePhoto,thirddProfilePhoto} = req.body
 
     if(!name || !city){
         res.status(400).json({errorMessage:"You must provide the name and city"})
@@ -91,7 +91,8 @@ router.patch('/:userId',verifyToken,async(req,res,next)=>{
             avatar,
             mainProfilePhoto,
             secondProfilePhoto,
-            thirddProfilePhoto
+            thirddProfilePhoto,
+            address
         })
         res.status(200).json({message: 'User updated!'})
     } catch (error) {
