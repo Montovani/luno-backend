@@ -74,7 +74,11 @@ router.patch('/:userId',verifyToken,async(req,res,next)=>{
         return
     }
 
-    const {name,aboutUser,petsCategoryAllowed,numberOfWalks,homeType,homeInformation,avatar,mainProfilePhoto,secondProfilePhoto,thirddProfilePhoto} = req.body
+    const {name,city,aboutUser,petsCategoryAllowed,numberOfWalks,homeType,homeInformation,avatar,mainProfilePhoto,secondProfilePhoto,thirddProfilePhoto} = req.body
+
+    if(!name || !city){
+        res.status(400).json({errorMessage:"You must provide the name and city"})
+    }
     try {
         // DOn't pass as empty string
         await User.findByIdAndUpdate(req.params.userId,{

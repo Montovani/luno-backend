@@ -1,4 +1,5 @@
 const verifyToken = require('../middlewares/auth.middleware')
+const Booking = require('../models/Booking.model')
 const Pet = require('../models/Pet.model')
 const User = require('../models/User.model')
 
@@ -96,6 +97,11 @@ router.delete('/:petId',verifyToken,async(req,res,next)=>{
         }
 
         await Pet.findByIdAndDelete(req.params.petId)
+
+        await Booking.updateMany(
+            {petCared: req.params.petId},
+            {$pull: {petCared: req.params.petId}}
+        )
         res.sendStatus(200)
     } catch (error) {
         next(error)
