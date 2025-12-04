@@ -89,7 +89,7 @@ router.patch("/:bookingId", verifyToken, async (req, res, next) => {
     const currentStatus = bookingHostReq.status;
     const newStatus = req.body.status;
     const today = new Date();
-    today.setUTCDate(8)
+    // today.setUTCDate(8)
     today.setUTCHours(0, 0, 0, 0);
 
     const startDate = new Date(bookingHostReq.dateStart);
