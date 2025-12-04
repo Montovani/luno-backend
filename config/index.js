@@ -10,7 +10,8 @@ function config(app){
     app.use(logger('dev'))
     app.use(
         cors({
-            origin: [process.env.ORIGIN]
+            origin: [process.env.ORIGIN],
+            credentials: true
         })
     )
     app.use(express.json())
