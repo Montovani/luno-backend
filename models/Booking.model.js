@@ -1,5 +1,5 @@
 const {Schema,model} = require('mongoose')
-
+//TODO - I need to record who canceled this add a property for it and the reason
 const bookingSchema = new Schema ({
     requester: { 
         type: Schema.Types.ObjectId,
