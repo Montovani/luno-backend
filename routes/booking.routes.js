@@ -1,8 +1,8 @@
 const verifyToken = require("../middlewares/auth.middleware");
 const Booking = require("../models/Booking.model");
+const User = require("../models/User.model");
 
 const router = require("express").Router();
-
 module.exports = router;
 
 // Create a new booking
@@ -81,7 +81,7 @@ router.patch("/:bookingId", verifyToken, async (req, res, next) => {
   try {
     // Make conditions
     const bookingHostReq = await Booking.findById(req.params.bookingId).select(
-      "host requester status dateStart dateEnd"
+      "host requester status dateStart dateEnd lunies"
     );
 
     const isRequester = bookingHostReq.requester.equals(req.payload._id);
@@ -89,7 +89,7 @@ router.patch("/:bookingId", verifyToken, async (req, res, next) => {
     const currentStatus = bookingHostReq.status;
     const newStatus = req.body.status;
     const today = new Date();
-    today.setUTCDate(12)
+    today.setUTCDate(8)
     today.setUTCHours(0, 0, 0, 0);
 
     const startDate = new Date(bookingHostReq.dateStart);
@@ -101,17 +101,6 @@ router.patch("/:bookingId", verifyToken, async (req, res, next) => {
     const isHappeningBooking = today >= startDate && today <= endDate;
     const isAfterEndBooking = today >= endDate; // Also includes the endDate
     const isBeforeStartBooking = today < startDate; //not include startDate
-
-    console.log("requester",isRequester)
-    console.log("host",isHost)
-    console.log('today',today)
-    console.log("Date Start:", startDate)
-    console.log("Date end", endDate)
-    console.log("isHappening", isHappeningBooking)
-    console.log("isAfter",isAfterEndBooking)
-    console.log("isBefore", isBeforeStartBooking)
-    console.log("Current Status",currentStatus)
-    console.log("newStatus",newStatus)
 
     if (!isRequester && !isHost) {
       res
@@ -202,7 +191,11 @@ router.patch("/:bookingId", verifyToken, async (req, res, next) => {
       },
       { runValidators: true }
     );
-
+    if(newStatus === 'confirmed' && currentStatus === 'pending'){
+      await User.findByIdAndUpdate(bookingHostReq.host._id, {
+        $inc: { lunies: bookingHostReq.lunies }
+        })
+      }
     if (invalidFields.length > 0) {
       res.status(400).json({
         message: "Booking updated with valid fields",
