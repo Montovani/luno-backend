@@ -70,9 +70,23 @@ router.get('/user/:userId', async(req,res,next)=>{
             path: 'review',
             populate: {
                 path:'owner',
-                select:'name'
+                select:'name avatar'
             }
         })
+
+        res.status(200).json(reviews)
+    } catch (error) {
+        next(error)
+    }
+})
+
+//Get the review from booking
+router.get('/booking/:bookingId',verifyToken,async(req,res,next)=>{
+    try {
+        const reviews = await Review.find({
+            bookSitting: req.params.bookingId,
+        })
+        .select('text stars')
 
         res.status(200).json(reviews)
     } catch (error) {
