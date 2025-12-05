@@ -256,7 +256,7 @@ router.get("/:bookingId", verifyToken, async (req, res, next) => {
     const bookingInfo = await Booking.findById(req.params.bookingId)
       .populate(
         "host",
-        "name city homeInformation homeType avatar petsCategoryAllowed coordinates address"
+        "name city homeInformation homeType avatar petsCategoryAllowed coordinates address coordinates"
       )
       .populate("requester", "name city avatar ")
       .populate("petCared")
