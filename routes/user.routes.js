@@ -16,10 +16,11 @@ router.get('/', async(req,res,next)=>{
     }
     try {
         const userList = await User.find(allowedQueries)
-        .select('-password -email -secondProfilePhot -thirdProfilePhoto -lunies -__v -address -aboutUser')
+        .select('-password -email -secondProfilePhoto -thirdProfilePhoto -lunies -__v -address -aboutUser')
         res.status(200).json(userList)
     } catch (error) {
-        res.status(404).json({errorMessage: "User not found"})
+        console.error('GET /api/user ERROR:', error); // <= ESSENCIAL
+        return res.status(500).json({ errorMessage: 'Internal server error' });
     }
 })
 
