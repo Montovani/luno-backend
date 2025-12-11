@@ -80,7 +80,7 @@ router.patch('/:userId',verifyToken,async(req,res,next)=>{
     const {name,city,coordinates,address,aboutUser,petsCategoryAllowed,numberOfWalks,homeType,homeInformation,avatar,mainProfilePhoto,secondProfilePhoto,thirddProfilePhoto} = req.body
 
     if(!name || !city){
-        res.status(400).json({errorMessage:"You must provide the name and city"})
+        return res.status(400).json({errorMessage:"You must provide the name and city"})
     }
     try {
         // DOn't pass as empty string
@@ -96,7 +96,8 @@ router.patch('/:userId',verifyToken,async(req,res,next)=>{
             secondProfilePhoto,
             thirddProfilePhoto,
             address,
-            coordinates
+            coordinates,
+            city
         })
         res.status(200).json({message: 'User updated!'})
     } catch (error) {
