@@ -19,7 +19,9 @@ router.get('/', async(req,res,next)=>{
         .select('-password -email -secondProfilePhoto -thirdProfilePhoto -lunies -__v -address -aboutUser')
         res.status(200).json(userList)
     } catch (error) {
-        console.error('GET /api/user ERROR:', error); // <= ESSENCIAL
+        console.error('GET /api/user ERROR:', error)
+        console.error('❌ ERRO:', error.message)
+        console.error('Stack:', error.stack)
         return res.status(500).json({ errorMessage: 'Internal server error' });
     }
 })
