@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 mongoose
 .connect(`${process.env.MONGODB_URI}/luno`,{
-  serverSelectionTimeoutMS: 30000, // aumenta timeout
+  serverSelectionTimeoutMS: 30000, 
   socketTimeoutMS: 45000,
 })
 .then((x)=>{
