@@ -58,7 +58,6 @@ router.get('/:userId', async(req,res,next)=>{
         .select('-password -email -lunies -__v -address')
         .lean()
 
-        // In the future think about to create a route in the pet specific for it.
         const pets = await Pet.find({owner: req.params.userId}).lean() 
         
         res.status(200).json({
